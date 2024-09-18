@@ -58,7 +58,6 @@ export default function Home() {
     toast('approved successful', 'success');
   };
 
-
   // Deposit
   const tokenDeposit = useContractWrite('deposit', {
     onSuccess(data) {
@@ -84,7 +83,7 @@ export default function Home() {
   // };
   const handleDeposit = async () => {
     console.log('handleDeposit called with amount:', recipient2);
-    if (!recipient2 ) {
+    if (!recipient2) {
       console.log('Invalid amount entered');
       return toast('Please enter a valid amount', 'error');
     }
@@ -99,7 +98,6 @@ export default function Home() {
       // toast(`Deposit failed: ${error.message}`, 'error');
     }
   };
-  
 
   // widthdraw
   const tokenWithdraw = useContractWrite('withdraw', {
@@ -115,7 +113,7 @@ export default function Home() {
 
   const handleWithdraw = async () => {
     try {
-       await tokenWithdraw.write();
+      await tokenWithdraw.write();
     } catch (error) {
       console.log('Withdraw error:', error);
     }
@@ -135,9 +133,9 @@ export default function Home() {
 
   // const handleProvideCollateral = async () => {
   //   if (!recipient3) return toast('Please enter collateral amount', 'error');
-  //   const collateralAmount = parseUnits(recipient3, 18); 
+  //   const collateralAmount = parseUnits(recipient3, 18);
   //   try {
-  //     await tokenApprove.write(); 
+  //     await tokenApprove.write();
 
   //     await tokenProvideCollateral.write([collateralAmount]);
   //     toast('Collateral provided successfully', 'success');
@@ -147,53 +145,40 @@ export default function Home() {
   //   }
   // };
 
-
   const handleProvideCollateral = async () => {
     if (!recipient3) {
       return toast('Please enter a valid collateral amount', 'error');
     }
-  
+
     const collateralAmount = parseUnits(recipient3, 18);
-  
+
     try {
       // Inform the user that approval is starting
       setIsApproving(true);
-  
+
       // Step 1: Approve the contract to spend tokens
       const approveTx = await tokenApprove.write([contract, collateralAmount]);
       // await approveTx.wait(); // Wait for the transaction to be mined
       setIsApproving(false);
       // Inform the user that collateral provision is starting
       setIsProvidingCollateral(true);
-  
+
       // Step 2: Provide collateral
       const collateralTx = await tokenProvideCollateral.write([collateralAmount]);
       // await collateralTx.wait(); // Wait for the transaction to be mined
-  
+
       setIsProvidingCollateral(false);
-  
+
       toast('Collateral provided successfully', 'success');
     } catch (error) {
       setIsApproving(false);
       setIsProvidingCollateral(false);
-  
+
       console.error('Provide Collateral error:', error);
       // const errorMessage = error?.data?.message || error.message;
       toast(`Collateral submission failed: `, 'error');
     }
   };
-  
-
-
-
-
-
-
-
-
-
-
-
 
   // borrow
 
@@ -250,8 +235,6 @@ export default function Home() {
     }
   };
 
-
-
   return (
     <main className="h-screen w-full flex justify-center items-center bg-black text-white">
       <div className="flex flex-col gap-5 items-center">
@@ -289,54 +272,50 @@ export default function Home() {
         </div>
         <hr />
         <div>
-
-        <div className=''>
           <div className="">
-            <h1 className=' text-center font-bold text-2xl'>Lending and Borrowing </h1>
-            <br />
-            <div className='  flex justify-evenly'>
-              <div>
-              <p>
-              Total Deposit: <span className="text-green-500 font-bold">{totalDepositsData}</span>
-            </p>
-            
-            <p>
-              collateral Factor: <span className="text-green-500 font-bold">{collateralFactorData} </span>
-            </p>
-              </div>
-              <div>
-              <p>
-              Total Loan: <span className="text-green-500 font-bold">{totalLoansData}</span>
-            </p>
-            <p>
-              interest Rate: <span className="text-green-500 font-bold">{interestRateData}%</span>
-            </p>
+            <div className="">
+              <h1 className=" text-center font-bold text-2xl">Lending and Borrowing </h1>
+              <br />
+              <div className="  flex justify-evenly">
+                <div>
+                  <p>
+                    Total Deposit: <span className="text-green-500 font-bold">{totalDepositsData}</span>
+                  </p>
 
+                  <p>
+                    collateral Factor: <span className="text-green-500 font-bold">{collateralFactorData} </span>
+                  </p>
+                </div>
+                <div>
+                  <p>
+                    Total Loan: <span className="text-green-500 font-bold">{totalLoansData}</span>
+                  </p>
+                  <p>
+                    interest Rate: <span className="text-green-500 font-bold">{interestRateData}%</span>
+                  </p>
+                </div>
               </div>
             </div>
-           
-          </div>
 
-          <div className=' flex justify-evenly mt-4 ml-[-70px]'>
-
-          <div className="flex gap-5">
-            <input
-              type="text"
-              placeholder="Enter amount in Eth"
-              className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
-              value={recipient2}
-              onChange={(e) => setRecipient2(e.target.value)}
-            />
-            <button className="border-cyan-700 border-2 rounded-md px-3 " onClick={handleDeposit}>
-              Deposit in Lending Pool
-            </button>
-          </div>
-          <div className="flex ">
-            <button className="bg-red-600 border-2 rounded-md px-5 " onClick={handleWithdraw}>
-              Withdraw
-            </button>
-          </div>
-          </div>
+            <div className=" flex justify-evenly mt-4 ml-[-70px]">
+              <div className="flex gap-5">
+                <input
+                  type="text"
+                  placeholder="Enter amount in Eth"
+                  className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
+                  value={recipient2}
+                  onChange={(e) => setRecipient2(e.target.value)}
+                />
+                <button className="border-cyan-700 border-2 rounded-md px-3 " onClick={handleDeposit}>
+                  Deposit in Lending Pool
+                </button>
+              </div>
+              <div className="flex ">
+                <button className="bg-red-600 border-2 rounded-md px-5 " onClick={handleWithdraw}>
+                  Withdraw
+                </button>
+              </div>
+            </div>
           </div>
           {/* <div className="flex gap-5 mt-4">
             <input
@@ -350,72 +329,69 @@ export default function Home() {
               Provide Collateral
             </button>
           </div> */}
- <div className='flex justify-evenly mt-[50px]'>
-<div className="flex gap-5 mt-4">
+          <div className="flex justify-evenly mt-[50px]">
+            <div className="flex gap-5 mt-4">
+              <input
+                type="text"
+                placeholder="Enter loan amount in Eth"
+                className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
+                value={recipient4}
+                onChange={(e) => setRecipient4(e.target.value)}
+              />
+              <button className="border-cyan-700 border-2 rounded-md px-3 py-1" onClick={handleBorrow}>
+                Borrow
+              </button>
+            </div>
+            <div className="flex gap-5 mt-4">
+              <input
+                type="text"
+                placeholder="Enter repayment amount in Eth"
+                className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
+                value={recipient5}
+                onChange={(e) => setRecipient5(e.target.value)}
+              />
+              <button className="bg-red-600 border-2 rounded-md px-3 py-1" onClick={handleRepayLoan}>
+                Repay Loan
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-5 mt-4  p-1 w-[60%] m-auto">
+            <p className="text-gray-500 ">
+              <strong>NOTE : </strong>To provide collateral, first you have to approved the token with this Address{' '}
+              <strong>0xCc70071580618288Ba588F0AA3D33959306CBf14</strong> then please enter the amount of tokens you'd
+              like to lock and follow the prompts to approve and submit your collateral.
+            </p>
+
             <input
               type="text"
-              placeholder="Enter loan amount in Eth"
+              placeholder="Enter collateral amount"
               className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
-              value={recipient4}
-              onChange={(e) => setRecipient4(e.target.value)}
+              value={recipient3}
+              onChange={(e) => setRecipient3(e.target.value)}
+              disabled={isApproving || isProvidingCollateral}
             />
-            <button className="border-cyan-700 border-2 rounded-md px-3 py-1" onClick={handleBorrow}>
-              Borrow
+
+            <button
+              className="border-cyan-700 border-2 rounded-md px-3 py-1 mt-2"
+              onClick={handleProvideCollateral}
+              disabled={isApproving || isProvidingCollateral}
+            >
+              {isApproving ? 'Approving...' : isProvidingCollateral ? 'Providing Collateral...' : 'Provide Collateral'}
             </button>
+
+            {isApproving && (
+              <p className="text-gray-600 mt-2">
+                Please confirm the <strong>approval</strong> transaction in your wallet.
+              </p>
+            )}
+
+            {isProvidingCollateral && (
+              <p className="text-gray-600 mt-2">
+                Please confirm the <strong>collateral</strong> transaction in your wallet.
+              </p>
+            )}
           </div>
-          <div className="flex gap-5 mt-4">
-            <input
-              type="text"
-              placeholder="Enter repayment amount in Eth"
-              className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
-              value={recipient5}
-              onChange={(e) => setRecipient5(e.target.value)}
-            />
-            <button className="bg-red-600 border-2 rounded-md px-3 py-1" onClick={handleRepayLoan}>
-              Repay Loan
-            </button>
-          </div>
-          </div>
-
-      <div className="flex flex-col gap-5 mt-4  p-1 w-[60%] m-auto">
-      <p className="text-gray-500 ">
-        <strong>NOTE : </strong>To provide collateral, first you have to approved the token with this Address <strong>0xCc70071580618288Ba588F0AA3D33959306CBf14</strong>  then please enter the amount of tokens you'd like to lock and follow the prompts to approve and submit your collateral.
-      </p>
-
-      <input
-        type="text"
-        placeholder="Enter collateral amount"
-        className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
-        value={recipient3}
-        onChange={(e) => setRecipient3(e.target.value)}
-        disabled={isApproving || isProvidingCollateral}
-      />
-
-      <button
-        className="border-cyan-700 border-2 rounded-md px-3 py-1 mt-2"
-        onClick={handleProvideCollateral}
-        disabled={isApproving || isProvidingCollateral}
-      >
-        {isApproving
-          ? 'Approving...'
-          : isProvidingCollateral
-          ? 'Providing Collateral...'
-          : 'Provide Collateral'}
-      </button>
-
-      {isApproving && (
-        <p className="text-gray-600 mt-2">
-          Please confirm the <strong>approval</strong> transaction in your wallet.
-        </p>
-      )}
-
-      {isProvidingCollateral && (
-        <p className="text-gray-600 mt-2">
-          Please confirm the <strong>collateral</strong> transaction in your wallet.
-        </p>
-      )}
-    </div>
-          
         </div>
       </div>
     </main>

@@ -16,7 +16,7 @@ export function useContractRead<T = unknown>(
   options?: UseContractReadParameters,
 ) {
   const { contract } = useNetworkData();
-  console.log("contract--->",contract);
+  console.log('contract--->', contract);
 
   return useReadContract<Abi, string, Array<any>, Config, T>({
     abi: contractABI as Abi,
@@ -47,13 +47,13 @@ export function useContractWrite(functionName: string, options?: useContractWrit
     },
   });
 
-  const write = async (args: Array<any> = [],overrides = {}) => {
-    return  await writeContractAsync({
+  const write = async (args: Array<any> = [], overrides = {}) => {
+    return await writeContractAsync({
       abi: contractABI as Abi,
       address: contract,
       args,
       functionName,
-      ...overrides
+      ...overrides,
     });
   };
   return { write, ...rest };

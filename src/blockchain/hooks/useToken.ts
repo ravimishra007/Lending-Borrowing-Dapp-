@@ -16,8 +16,8 @@ export function useTokenRead<T = unknown>(
   options?: UseTokenReadParameters,
 ) {
   const { token } = useNetworkData();
-  console.log("token--->",token);
-  
+  console.log('token--->', token);
+
   return useReadContract<Abi, string, Array<any>, Config, T>({
     abi: tokenABI as Abi,
     address: token,
