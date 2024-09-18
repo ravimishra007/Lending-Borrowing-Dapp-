@@ -16,6 +16,8 @@ export function useContractRead<T = unknown>(
   options?: UseContractReadParameters,
 ) {
   const { contract } = useNetworkData();
+  console.log("contract--->",contract);
+
   return useReadContract<Abi, string, Array<any>, Config, T>({
     abi: contractABI as Abi,
     address: contract,
@@ -25,6 +27,8 @@ export function useContractRead<T = unknown>(
     ...options,
   });
 }
+// type FuntionName = ContractFunctionName<typeof abi, "nonpayable" | "view" | "pure">;
+// type Args = ContractFunctionArgs<typeof abi, "nonpayable" | "view" | "pure", FuntionName>;
 
 type useContractWriteParameters = Pick<UseWriteContractParameters, 'mutation'>['mutation'];
 
@@ -43,12 +47,13 @@ export function useContractWrite(functionName: string, options?: useContractWrit
     },
   });
 
-  const write = async (args: Array<any> = []) => {
-    await writeContractAsync({
+  const write = async (args: Array<any> = [],overrides = {}) => {
+    return  await writeContractAsync({
       abi: contractABI as Abi,
       address: contract,
       args,
       functionName,
+      ...overrides
     });
   };
   return { write, ...rest };
