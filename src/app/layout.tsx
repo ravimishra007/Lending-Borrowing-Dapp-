@@ -8,8 +8,8 @@ import { ReactNode } from 'react';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Wagmi',
-  description: 'This is a description of the site.',
+  title: 'Lending and Borrowing Dapp',
+  description: 'This is a Lending and Borrowing Dapp.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
