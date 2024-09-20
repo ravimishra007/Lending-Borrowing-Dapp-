@@ -12,6 +12,15 @@ export default function Home() {
   const toast = useToast();
   const { address } = useAccount();
   const { contract } = useNetworkData();
+  const [activeSection, setActiveSection] = useState<'lending' | 'borrowing' | null>("lending");
+  const handleSectionClick = (section: 'lending' | 'borrowing') => {
+    if (activeSection === section) {
+      setActiveSection(null); // Close section if clicked again
+    } else {
+      setActiveSection(section);
+    }
+  };
+
   // token
   const [recipient1, setRecipient1] = useState('');
   const [recipient2, setRecipient2] = useState('');
@@ -237,23 +246,27 @@ export default function Home() {
 
   return (
     <main className="h-screen w-full flex justify-center items-center bg-black text-white">
-      <div className="flex flex-col gap-5 items-center">
+      <div className="flex flex-col gap-3 items-center  border w-[60%]">
         <ConnectButton />
 
         {address ? (
-          <div className="">
-            <p>
-              Token Balance: <span className="text-green-500 font-bold">{tokenBalanceData}</span>
-            </p>
-            <p>
-              Token Name: <span className="text-green-500 font-bold">{tokenNameData}</span>
-            </p>
-            <p>
-              Token Decimals: <span className="text-green-500 font-bold">{tokenDecimalsData} </span>
-            </p>
-            <p>
-              Token Symbol: <span className="text-green-500 font-bold">{tokenSymbolData}</span>
-            </p>
+          <div className="  w-[100%] m-auto flex flex-col justify-center items-center gap-1 ">
+            <div className="flex justify-around    w-full">
+              <p>
+                Token Balance: <span className="text-green-500 font-bold ">{tokenBalanceData}</span>
+              </p>
+              <p>
+                Token Name: <span className="text-green-500 font-bold">{tokenNameData}</span>
+              </p>
+            </div>
+            <div className="flex justify-around    w-full">
+              <p>
+                Token Decimals: <span className="text-green-500 font-bold">{tokenDecimalsData} </span>
+              </p>
+              <p>
+                Token Symbol: <span className="text-green-500 font-bold">{tokenSymbolData}</span>
+              </p>
+            </div>
           </div>
         ) : (
           <p className="text-red-500">Connect Your Wallet</p>
@@ -270,14 +283,11 @@ export default function Home() {
             Approve
           </button>
         </div>
-        <hr />
-        <div>
-          <div className="">
-            <div className="">
-              <h1 className=" text-center font-bold text-2xl">Lending and Borrowing </h1>
-              <br />
-              <div className="  flex justify-evenly">
-                <div>
+        <hr className="border w-[90%]" />
+            <div className="w-full">
+              <h1 className=" text-center font-bold text-2xl mt-[-12px]">Lending and Borrowing </h1>
+              <div className="   w-[100%] mb-1  flex flex-col justify-center items-center">
+                <div className='flex justify-around    w-full'>
                   <p>
                     Total Deposit: <span className="text-green-500 font-bold">{totalDepositsData}</span>
                   </p>
@@ -286,7 +296,7 @@ export default function Home() {
                     collateral Factor: <span className="text-green-500 font-bold">{collateralFactorData} </span>
                   </p>
                 </div>
-                <div>
+                <div className='flex justify-around    w-full'>
                   <p>
                     Total Loan: <span className="text-green-500 font-bold">{totalLoansData}</span>
                   </p>
@@ -295,10 +305,28 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-            </div>
+            <div className="border  ">
+            <div className="w-full h-[45px] flex flex-row">
+  <div 
+    onClick={() => handleSectionClick('lending')} 
+    className={`${activeSection === 'lending' ? 'bg-slate-900' : 'bg-black'} flex flex-col justify-center w-[50%] border`}
+  >
+    <button>Lending</button>
+  </div>
 
-            <div className=" flex justify-evenly mt-4 ml-[-70px]">
-              <div className="flex gap-5">
+  <div 
+    onClick={() => handleSectionClick('borrowing')} 
+    className={`${activeSection === 'borrowing' ? 'bg-slate-900' : 'bg-black'} flex flex-col justify-center w-[50%] border`}
+  >
+    <button>Borrow</button>
+  </div>
+</div>
+
+
+                {/* Lending Section */}
+          {activeSection === 'lending' && (
+             <div className="bg-slate-900 border flex flex-col  justify-center items-center gap-4  ">
+              <div className="flex gap-5 mt-8 ">
                 <input
                   type="text"
                   placeholder="Enter amount in Eth"
@@ -306,17 +334,19 @@ export default function Home() {
                   value={recipient2}
                   onChange={(e) => setRecipient2(e.target.value)}
                 />
-                <button className="border-cyan-700 border-2 rounded-md px-3 " onClick={handleDeposit}>
+                <button className="border-cyan-700 border-2 rounded-md px-3 bg-black " onClick={handleDeposit}>
                   Deposit in Lending Pool
                 </button>
               </div>
-              <div className="flex ">
-                <button className="bg-red-600 border-2 rounded-md px-5 " onClick={handleWithdraw}>
+              <div className="flex w-[57%] mb-5">
+                <button className="bg-red-600 w-full border-2 rounded-md p-2  " onClick={handleWithdraw}>
                   Withdraw
                 </button>
               </div>
             </div>
-          </div>
+             )}
+
+            
           {/* <div className="flex gap-5 mt-4">
             <input
               type="text"
@@ -329,7 +359,12 @@ export default function Home() {
               Provide Collateral
             </button>
           </div> */}
-          <div className="flex justify-evenly mt-[50px]">
+
+
+           {/* Borrowing Section */}
+           {activeSection === 'borrowing' && (
+          <div className='bg-slate-900'>
+          <div className="flex justify-evenly  ">
             <div className="flex gap-5 mt-4">
               <input
                 type="text"
@@ -338,7 +373,7 @@ export default function Home() {
                 value={recipient4}
                 onChange={(e) => setRecipient4(e.target.value)}
               />
-              <button className="border-cyan-700 border-2 rounded-md px-3 py-1" onClick={handleBorrow}>
+              <button className="border-cyan-700 bg-black border-2 rounded-md px-3 py-1" onClick={handleBorrow}>
                 Borrow
               </button>
             </div>
@@ -356,7 +391,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-5 mt-4  p-1 w-[60%] m-auto">
+          <div className="flex flex-col border w-full gap-5 mt-2  p-2 m-auto">
             <p className="text-gray-500 ">
               <strong>NOTE : </strong>To provide collateral, first you have to approved the token with this Address{' '}
               <strong>0xCc70071580618288Ba588F0AA3D33959306CBf14</strong> then please enter the amount of tokens you'd
@@ -373,7 +408,7 @@ export default function Home() {
             />
 
             <button
-              className="border-cyan-700 border-2 rounded-md px-3 py-1 mt-2"
+              className="border-cyan-700 bg-black border-2 rounded-md h-[40px]"
               onClick={handleProvideCollateral}
               disabled={isApproving || isProvidingCollateral}
             >
@@ -392,6 +427,10 @@ export default function Home() {
               </p>
             )}
           </div>
+          </div>
+                    )}
+
+        </div>
         </div>
       </div>
     </main>
