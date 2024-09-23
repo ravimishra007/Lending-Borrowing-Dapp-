@@ -391,7 +391,7 @@ export default function Home() {
                 <div className="flex flex-col border w-full gap-5 mt-2  p-2 m-auto">
                   <p className="text-gray-500 ">
                     <strong>NOTE : </strong>To provide collateral, first you have to approved the token with this
-                    Address <strong>0xCc70071580618288Ba588F0AA3D33959306CBf14</strong> then please enter the amount of
+                    Address <strong>0x195C759cFBC64ea32704e2482D9D96627eD03A76</strong> then please enter the amount of
                     tokens you'd like to lock and follow the prompts to approve and submit your collateral.
                   </p>
 
