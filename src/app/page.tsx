@@ -60,6 +60,30 @@ export default function Home() {
   const tokenBalanceData = formatUnits(tokenBalance.data || BigInt(0), tokenDecimalsData);
   const tokenSymbolData = tokenSymbol.data as string;
 
+  // Read collateral balance from the contract
+  const collateralBalance = useContractRead<bigint>('getCollateralBalance', address ? [address] : []);
+  const collateralBalanceData = collateralBalance.data ? formatUnits(collateralBalance.data, tokenDecimalsData) : '0';
+
+  // Read total lender deposit with interest
+  const totalLenderDepositWithInterest = useContractRead<bigint>(
+    'getTotalLenderDepositWithInterest',
+    address ? [address] : [],
+  );
+
+  // Read total borrower loan with interest
+  const totalBorrowerLoanWithInterest = useContractRead<bigint>(
+    'getTotalBorrowerLoanWithInterest',
+    address ? [address] : [],
+  );
+
+  const totalLenderDepositWithInterestData = totalLenderDepositWithInterest.data
+    ? formatUnits(totalLenderDepositWithInterest.data, tokenDecimalsData)
+    : '0';
+
+  const totalBorrowerLoanWithInterestData = totalBorrowerLoanWithInterest.data
+    ? formatUnits(totalBorrowerLoanWithInterest.data, tokenDecimalsData)
+    : '0';
+
   const handleApprove = async () => {
     if (!recipient1) return toast('Please enter recipient address', 'error');
     const amount = parseUnits('1000', tokenDecimalsData);
@@ -132,7 +156,7 @@ export default function Home() {
   const tokenProvideCollateral = useContractWrite('provideCollateral', {
     onSuccess(data) {
       console.log('data: provideCollateral write ---->', data);
-      toast('Collateral provided successfully', 'success');
+      // toast('Collateral provided successfully', 'success');
     },
     onError(error) {
       console.log('Collateral submission failed: ', error);
@@ -189,6 +213,27 @@ export default function Home() {
     }
   };
 
+  // Hook to call the withdrawCollateral function
+  const withdrawCollateral = useContractWrite('withdrawCollateral', {
+    onSuccess(data) {
+      console.log('Collateral withdrawal successful:', data);
+      toast('Collateral withdrawal successful', 'success');
+    },
+    onError(error) {
+      console.error('Collateral withdrawal failed:', error);
+      // toast(`Collateral withdrawal failed: ${error.message}`, 'error');
+    },
+  });
+
+  const handleWithdrawCollateral = async () => {
+    try {
+      await withdrawCollateral.write();
+    } catch (error) {
+      console.error('Withdraw Collateral error:', error);
+      // toast(`Collateral withdrawal failed: `, 'error');
+    }
+  };
+
   // borrow
 
   const tokenBorrow = useContractWrite('borrow', {
@@ -209,7 +254,7 @@ export default function Home() {
 
     try {
       await tokenBorrow.write([loanAmount]);
-      toast('Borrow successful', 'success');
+      // toast('Borrow successful', 'success');
     } catch (error) {
       console.log('Borrow error:', error);
       toast('Borrow failed', 'error');
@@ -237,7 +282,7 @@ export default function Home() {
 
     try {
       await tokenRepayLoan.write([], { value: repaymentAmount });
-      toast('Repayment successful', 'success');
+      // toast('Repayment successful', 'success');
     } catch (error) {
       console.log('Repay Loan error:', error);
       toast('Repayment failed', 'error');
@@ -265,6 +310,14 @@ export default function Home() {
               </p>
               <p>
                 Token Symbol: <span className="text-green-500 font-bold">{tokenSymbolData}</span>
+              </p>
+            </div>
+            <div className="flex justify-around w-full">
+              <p>
+                Collateral Balance:{' '}
+                <span className="text-green-500 font-bold">
+                  {collateralBalanceData} {tokenSymbolData}
+                </span>
               </p>
             </div>
           </div>
@@ -295,13 +348,22 @@ export default function Home() {
               <p>
                 collateral Factor: <span className="text-green-500 font-bold">{collateralFactorData} </span>
               </p>
-            </div>
-            <div className="flex justify-around    w-full">
               <p>
                 Total Loan: <span className="text-green-500 font-bold">{totalLoansData}</span>
               </p>
               <p>
                 interest Rate: <span className="text-green-500 font-bold">{interestRateData}%</span>
+              </p>
+            </div>
+            <div className="flex justify-around    w-full">
+              <p>
+                Total Lender Deposit with Interest:{' '}
+                <span className="text-green-500 font-bold">{totalLenderDepositWithInterestData}</span>
+              </p>
+
+              <p>
+                Total Borrower Loan with Interest:{' '}
+                <span className="text-green-500 font-bold">{totalBorrowerLoanWithInterestData}</span>
               </p>
             </div>
           </div>
@@ -344,7 +406,6 @@ export default function Home() {
                 </div>
               </div>
             )}
-
             {/* <div className="flex gap-5 mt-4">
             <input
               type="text"
@@ -388,10 +449,10 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex flex-col border w-full gap-5 mt-2  p-2 m-auto">
+                <div className="flex flex-col  w-full gap-5 mt-2  p-2 m-auto">
                   <p className="text-gray-500 ">
                     <strong>NOTE : </strong>To provide collateral, first you have to approved the token with this
-                    Address <strong>0x195C759cFBC64ea32704e2482D9D96627eD03A76</strong> then please enter the amount of
+                    Address <strong>0x832a0BA8e07f8f79345fD8f65C309b41739a4e0C</strong> then please enter the amount of
                     tokens you'd like to lock and follow the prompts to approve and submit your collateral.
                   </p>
 
@@ -427,6 +488,21 @@ export default function Home() {
                       Please confirm the <strong>collateral</strong> transaction in your wallet.
                     </p>
                   )}
+                </div>
+
+                <div className="bg-slate-900">
+                  {/* Existing code for borrowing section */}
+                  <div className="flex flex-col  w-full gap-5 mt-2 p-2 m-auto">
+                    {/* Display Collateral Balance
+      <p>
+        Your Collateral Balance: <span className="text-green-500 font-bold">{collateralBalanceData} {tokenSymbolData}</span>
+      </p> */}
+
+                    {/* Withdraw Collateral Button */}
+                    <button className="bg-red-600 border-2 rounded-md p-2" onClick={handleWithdrawCollateral}>
+                      Withdraw Collateral
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

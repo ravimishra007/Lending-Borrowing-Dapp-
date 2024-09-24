@@ -2,8 +2,8 @@ import type { Network, Networks } from '@/lib/types/network';
 
 const networks: Networks = {
   97: {
-    contract: '0x195C759cFBC64ea32704e2482D9D96627eD03A76',
-    token: '0x2B542335D381640335ac52642983c64589249e46',
+    contract: '0x832a0BA8e07f8f79345fD8f65C309b41739a4e0C',
+    token: '0x404561f742d8C2D359f3cbd9a2845a58d0Cb9137',
   },
 };
 
