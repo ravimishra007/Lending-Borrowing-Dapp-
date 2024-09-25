@@ -490,20 +490,14 @@ export default function Home() {
                   )}
                 </div>
 
-                <div className="bg-slate-900">
-                  {/* Existing code for borrowing section */}
+                {/* <div className="bg-slate-900">
                   <div className="flex flex-col  w-full gap-5 mt-2 p-2 m-auto">
-                    {/* Display Collateral Balance
-      <p>
-        Your Collateral Balance: <span className="text-green-500 font-bold">{collateralBalanceData} {tokenSymbolData}</span>
-      </p> */}
-
-                    {/* Withdraw Collateral Button */}
+       
                     <button className="bg-red-600 border-2 rounded-md p-2" onClick={handleWithdrawCollateral}>
                       Withdraw Collateral
                     </button>
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
           </div>
