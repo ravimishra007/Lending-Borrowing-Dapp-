@@ -7,10 +7,10 @@ import ConnectButton from '@/components/shared/ConnectButton';
 import { useContractRead, useContractWrite, useNftTokenWrite, useTokenRead, useTokenWrite } from '@/blockchain/hooks';
 import useToast from '@/hooks/useToast';
 import useNetworkData from '@/blockchain/hooks/useNetworkData';
-import { usePublicClient } from 'wagmi';
+// import { use } from 'wagmi';
+
 
 export default function Home() {
-  const publicClient = usePublicClient();
 
   // nft
   const [recipientAddress, setRecipientAddress] = useState('');
@@ -363,17 +363,18 @@ export default function Home() {
     }
 
     try {
-      // Step 1: Approve the lending contract to transfer your NFT
       const txHashApprove = await nftApprove.write([contract, tokenId]);
 
-      // Wait for the approval transaction to be mined
-      await publicClient.waitForTransactionReceipt({ hash: txHashApprove });
+      // await txHashApprove.wait()
 
-      // Step 2: Provide NFT collateral
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
       const txHashCollateral = await provideNFTCollateral.write([nftContractAddress, tokenId, valuation]);
 
-      // Wait for the collateral transaction to be mined
-      await publicClient.waitForTransactionReceipt({ hash: txHashCollateral });
+      // await txHashCollateral.wait()
+
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
 
       toast('NFT collateral provided successfully', 'success');
     } catch (error) {

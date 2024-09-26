@@ -32,7 +32,7 @@ type useTokenWriteParameters = Pick<UseWriteContractParameters, 'mutation'>['mut
 
 export function useNftTokenWrite(functionName: string, options?: useTokenWriteParameters) {
   const { nftToken } = useNetworkData();
-  const { writeContractAsync, writeContract, ...rest } = useWriteContract({
+  const { writeContractAsync, writeContract,  ...rest } = useWriteContract({
     config: wagmiConfig,
     mutation: {
       onError: (error) => {
@@ -46,13 +46,23 @@ export function useNftTokenWrite(functionName: string, options?: useTokenWritePa
   });
 
   const write = async (args: Array<any> = []) => {
-    const txHash = await writeContractAsync({
+    const txResponse= await writeContractAsync({
       abi: nftTokenABI as Abi,
       address: nftToken,
       args,
       functionName,
     });
-    return txHash;
+    return txResponse;
   };
   return { write, ...rest };
+
+  // const write = (args: Array<any> = []) => {
+  //   return writeContractAsync({
+  //     abi: nftTokenABI as Abi,
+  //     address: nftToken,
+  //     args,
+  //     functionName,
+  //   });
+  // };
+  // return { write, ...rest };
 }
