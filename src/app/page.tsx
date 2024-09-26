@@ -371,7 +371,7 @@ export default function Home() {
 
       // await txHashCollateral.wait()
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 10000));
 
       toast('NFT collateral provided successfully', 'success');
     } catch (error) {
