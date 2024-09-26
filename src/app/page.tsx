@@ -1,14 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { formatUnits, parseUnits } from 'viem';
 import ConnectButton from '@/components/shared/ConnectButton';
-import { useContractRead, useContractWrite, useTokenRead, useTokenWrite } from '@/blockchain/hooks';
+import { useContractRead, useContractWrite, useNftTokenWrite, useTokenRead, useTokenWrite } from '@/blockchain/hooks';
 import useToast from '@/hooks/useToast';
 import useNetworkData from '@/blockchain/hooks/useNetworkData';
+import { usePublicClient } from 'wagmi';
 
 export default function Home() {
+  const publicClient = usePublicClient();
+
+  // nft
+  const [recipientAddress, setRecipientAddress] = useState('');
+  const [isMinting, setIsMinting] = useState(false);
+
+  const [nftContractAddress, setNftContractAddress] = useState('');
+  const [tokenId, setTokenId] = useState('');
+  const [valuation, setValuation] = useState('');
+
   const toast = useToast();
   const { address } = useAccount();
   const { contract } = useNetworkData();
@@ -289,8 +300,90 @@ export default function Home() {
     }
   };
 
+  // nft mint
+  const mintNFT = useNftTokenWrite('mintNFT', {
+    onSuccess(data) {
+      console.log('NFT minted successfully:', data);
+      toast('NFT minted successfully', 'success');
+    },
+    onError(error) {
+      console.error('Minting NFT failed:', error);
+      toast('Minting NFT failed', 'error');
+    },
+  });
+
+  const handleMintNFT = async () => {
+    if (!recipientAddress) {
+      return toast('Please enter the recipient address', 'error');
+    }
+
+    try {
+      setIsMinting(true);
+
+      // Call the mintNFT function
+      await mintNFT.write([recipientAddress]);
+
+      setIsMinting(false);
+      // Success message is handled in onSuccess callback
+    } catch (error) {
+      setIsMinting(false);
+      console.error('Mint NFT error:', error);
+      // Error message is handled in onError callback
+    }
+  };
+
+  // nft
+
+  const nftApprove = useNftTokenWrite('approve', {
+    onSuccess(data) {
+      console.log('NFT approved successfully:', data);
+      toast('NFT approved successfully', 'success');
+    },
+    onError(error) {
+      console.error('NFT approval failed:', error);
+      toast('NFT approval failed', 'error');
+    },
+  });
+
+  // Hook to call 'provideNFTCollateral' on the lending contract
+  const provideNFTCollateral = useContractWrite('provideNFTCollateral', {
+    onSuccess(data) {
+      console.log('NFT collateral provided successfully:', data);
+      toast('NFT collateral provided successfully', 'success');
+    },
+    onError(error) {
+      console.error('Providing NFT collateral failed:', error);
+      toast('Providing NFT collateral failed', 'error');
+    },
+  });
+
+  const handleProvideNFTCollateral = async () => {
+    if (!nftContractAddress || !tokenId || !valuation) {
+      return toast('Please enter all NFT collateral details', 'error');
+    }
+
+    try {
+      // Step 1: Approve the lending contract to transfer your NFT
+      const txHashApprove = await nftApprove.write([contract, tokenId]);
+
+      // Wait for the approval transaction to be mined
+      await publicClient.waitForTransactionReceipt({ hash: txHashApprove });
+
+      // Step 2: Provide NFT collateral
+      const txHashCollateral = await provideNFTCollateral.write([nftContractAddress, tokenId, valuation]);
+
+      // Wait for the collateral transaction to be mined
+      await publicClient.waitForTransactionReceipt({ hash: txHashCollateral });
+
+      toast('NFT collateral provided successfully', 'success');
+    } catch (error) {
+      console.error('Provide NFT Collateral error:', error);
+      toast('Providing NFT collateral failed', 'error');
+    }
+  };
+
   return (
-    <main className="h-screen w-full flex justify-center items-center bg-black text-white">
+    <main className="h-[800px] w-full flex justify-center items-center bg-black text-white">
       <div className="flex flex-col gap-3 items-center  border w-[60%]">
         <ConnectButton />
 
@@ -312,30 +405,45 @@ export default function Home() {
                 Token Symbol: <span className="text-green-500 font-bold">{tokenSymbolData}</span>
               </p>
             </div>
-            <div className="flex justify-around w-full">
-              <p>
-                Collateral Balance:{' '}
-                <span className="text-green-500 font-bold">
-                  {collateralBalanceData} {tokenSymbolData}
-                </span>
-              </p>
-            </div>
           </div>
         ) : (
           <p className="text-red-500">Connect Your Wallet</p>
         )}
-        <div className="flex gap-5">
-          <input
-            type="text"
-            placeholder="Enter recipient address"
-            className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
-            value={recipient1}
-            onChange={(e) => setRecipient1(e.target.value)}
-          />
-          <button className="border-cyan-700 border-2 rounded-md px-3 py-1" onClick={handleApprove}>
-            Approve
-          </button>
+        <div className=" flex flex-row gap-3">
+          <div className="flex gap-5">
+            <input
+              type="text"
+              placeholder="Enter recipient address"
+              className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
+              value={recipient1}
+              onChange={(e) => setRecipient1(e.target.value)}
+            />
+            <button className="border-cyan-700 border-2 rounded-md px-3 py-1" onClick={handleApprove}>
+              Approve
+            </button>
+          </div>
+
+          <div className="mint-nft-section">
+            {/* <h2>Mint NFT</h2> */}
+            <div className="flex flex-row gap-4">
+              <input
+                type="text"
+                placeholder="Recipient Address"
+                value={recipientAddress}
+                onChange={(e) => setRecipientAddress(e.target.value)}
+                className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
+              />
+              <button
+                onClick={handleMintNFT}
+                disabled={isMinting}
+                className="border-cyan-700 border-2 rounded-md px-3 py-1"
+              >
+                {isMinting ? 'Minting...' : 'Mint NFT'}
+              </button>
+            </div>
+          </div>
         </div>
+
         <hr className="border w-[90%]" />
         <div className="w-full">
           <h1 className=" text-center font-bold text-2xl mt-[-12px]">Lending and Borrowing </h1>
@@ -364,6 +472,12 @@ export default function Home() {
               <p>
                 Total Borrower Loan with Interest:{' '}
                 <span className="text-green-500 font-bold">{totalBorrowerLoanWithInterestData}</span>
+              </p>
+              <p>
+                Collateral Balance:{' '}
+                <span className="text-green-500 font-bold">
+                  {collateralBalanceData} {tokenSymbolData}
+                </span>
               </p>
             </div>
           </div>
@@ -421,7 +535,7 @@ export default function Home() {
 
             {/* Borrowing Section */}
             {activeSection === 'borrowing' && (
-              <div className="bg-slate-900">
+              <div className="bg-slate-900 border p-2">
                 <div className="flex justify-evenly  ">
                   <div className="flex gap-5 mt-4">
                     <input
@@ -452,42 +566,80 @@ export default function Home() {
                 <div className="flex flex-col  w-full gap-5 mt-2  p-2 m-auto">
                   <p className="text-gray-500 ">
                     <strong>NOTE : </strong>To provide collateral, first you have to approved the token with this
-                    Address <strong>0x832a0BA8e07f8f79345fD8f65C309b41739a4e0C</strong> then please enter the amount of
+                    Address <strong>0xD92f79Ccf5f371269F1625c0e72A5A5D8d4092b2</strong> then please enter the amount of
                     tokens you'd like to lock and follow the prompts to approve and submit your collateral.
                   </p>
+                  <div className="flex flex-row justify-start items-center gap-4">
+                    <input
+                      type="text"
+                      placeholder="Enter collateral amount"
+                      className="p-2 border-none rounded-md focus:outline-cyan-300 w-[70%] text-black"
+                      value={recipient3}
+                      onChange={(e) => setRecipient3(e.target.value)}
+                      disabled={isApproving || isProvidingCollateral}
+                    />
 
-                  <input
-                    type="text"
-                    placeholder="Enter collateral amount"
-                    className="p-2 border-none rounded-md focus:outline-cyan-300 text-black"
-                    value={recipient3}
-                    onChange={(e) => setRecipient3(e.target.value)}
-                    disabled={isApproving || isProvidingCollateral}
-                  />
+                    <button
+                      className="border-cyan-700 bg-black border-2 rounded-md h-[42px] w-[28%] p-2"
+                      onClick={handleProvideCollateral}
+                      disabled={isApproving || isProvidingCollateral}
+                    >
+                      {isApproving
+                        ? 'Approving...'
+                        : isProvidingCollateral
+                          ? 'Providing Collateral...'
+                          : 'Provide token Collateral'}
+                    </button>
 
+                    {isApproving && (
+                      <p className="text-gray-600 mt-2">
+                        Please confirm the <strong>approval</strong> transaction in your wallet.
+                      </p>
+                    )}
+
+                    {isProvidingCollateral && (
+                      <p className="text-gray-600 mt-2">
+                        Please confirm the <strong>collateral</strong> transaction in your wallet.
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <p>
+                  NFT contract Addresh : <strong>0x71E0C652D19E5e0CdAa5d470ddb9E7b2a86b7033</strong>
+                </p>
+
+                <div className="flex flex-row justify-start items-center gap-4 ml-2">
+                  {/* ...Your UI elements... */}
+                  <div className="w-[70%] flex flex-row justify-start items-center gap-7">
+                    <input
+                      type="text"
+                      placeholder="NFT Contract Address"
+                      className="w-[30%] p-2 border-none rounded-md focus:outline-cyan-300  text-black"
+                      value={nftContractAddress}
+                      onChange={(e) => setNftContractAddress(e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Token ID"
+                      className="w-[30%] p-2 border-none rounded-md focus:outline-cyan-300  text-black"
+                      value={tokenId}
+                      onChange={(e) => setTokenId(e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Valuation"
+                      className="w-[30%] p-2 border-none rounded-md focus:outline-cyan-300  text-black"
+                      value={valuation}
+                      onChange={(e) => setValuation(e.target.value)}
+                    />
+                  </div>
                   <button
-                    className="border-cyan-700 bg-black border-2 rounded-md h-[40px]"
-                    onClick={handleProvideCollateral}
-                    disabled={isApproving || isProvidingCollateral}
+                    className="border-cyan-700 bg-black border-2 rounded-md h-[42px] w-[28%] p-2"
+                    onClick={handleProvideNFTCollateral}
                   >
-                    {isApproving
-                      ? 'Approving...'
-                      : isProvidingCollateral
-                        ? 'Providing Collateral...'
-                        : 'Provide Collateral'}
+                    Provide NFT Collateral
                   </button>
-
-                  {isApproving && (
-                    <p className="text-gray-600 mt-2">
-                      Please confirm the <strong>approval</strong> transaction in your wallet.
-                    </p>
-                  )}
-
-                  {isProvidingCollateral && (
-                    <p className="text-gray-600 mt-2">
-                      Please confirm the <strong>collateral</strong> transaction in your wallet.
-                    </p>
-                  )}
                 </div>
 
                 {/* <div className="bg-slate-900">

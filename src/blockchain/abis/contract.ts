@@ -2,19 +2,6 @@ export const contractABI = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: 'loanAmount',
-        type: 'uint256',
-      },
-    ],
-    name: 'borrow',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: '_collateralTokenAddress',
         type: 'address',
@@ -43,26 +30,6 @@ export const contractABI = [
     type: 'event',
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'lender',
-        type: 'address',
-      },
-    ],
-    name: 'calculateInterest',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'deposit',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -80,19 +47,6 @@ export const contractABI = [
     ],
     name: 'Deposit',
     type: 'event',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'borrower',
-        type: 'address',
-      },
-    ],
-    name: 'liquidate',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
   },
   {
     anonymous: false,
@@ -114,19 +68,6 @@ export const contractABI = [
     type: 'event',
   },
   {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: 'tokenAmount',
-        type: 'uint256',
-      },
-    ],
-    name: 'provideCollateral',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -144,20 +85,6 @@ export const contractABI = [
     ],
     name: 'Repay',
     type: 'event',
-  },
-  {
-    inputs: [],
-    name: 'repayLoan',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'withdraw',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
   },
   {
     anonymous: false,
@@ -179,10 +106,50 @@ export const contractABI = [
     type: 'event',
   },
   {
-    inputs: [],
-    name: 'withdrawCollateral',
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'loanAmount',
+        type: 'uint256',
+      },
+    ],
+    name: 'borrow',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'borrowerNFTs',
+    outputs: [
+      {
+        internalType: 'address',
+        name: 'nftContract',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'valuation',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -212,6 +179,19 @@ export const contractABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'lender',
+        type: 'address',
+      },
+    ],
+    name: 'calculateInterest',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -276,6 +256,13 @@ export const contractABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'deposit',
+    outputs: [],
+    stateMutability: 'payable',
     type: 'function',
   },
   {
@@ -363,6 +350,25 @@ export const contractABI = [
     inputs: [
       {
         internalType: 'address',
+        name: 'borrower',
+        type: 'address',
+      },
+    ],
+    name: 'getTotalCollateralValue',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: 'lender',
         type: 'address',
       },
@@ -421,6 +427,62 @@ export const contractABI = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'borrower',
+        type: 'address',
+      },
+    ],
+    name: 'liquidate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'tokenAmount',
+        type: 'uint256',
+      },
+    ],
+    name: 'provideCollateral',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'nftContract',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'valuation',
+        type: 'uint256',
+      },
+    ],
+    name: 'provideNFTCollateral',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'repayLoan',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'totalDeposits',
     outputs: [
@@ -444,6 +506,27 @@ export const contractABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'withdrawCollateral',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'withdrawNFTCollateral',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ];
