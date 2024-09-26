@@ -9,9 +9,7 @@ import useToast from '@/hooks/useToast';
 import useNetworkData from '@/blockchain/hooks/useNetworkData';
 // import { use } from 'wagmi';
 
-
 export default function Home() {
-
   // nft
   const [recipientAddress, setRecipientAddress] = useState('');
   const [isMinting, setIsMinting] = useState(false);
@@ -374,7 +372,6 @@ export default function Home() {
       // await txHashCollateral.wait()
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
-
 
       toast('NFT collateral provided successfully', 'success');
     } catch (error) {
